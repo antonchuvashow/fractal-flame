@@ -4,7 +4,7 @@ echo "Testing basic functionality..."
 
 # Аргументы для запуска программы
 EXECUTABLE_PATH="$1"
-ARGS="-w 800 -h 600 -o test_output.png"
+ARGS="-w 800 --height 600 -o test_output.png"
 
 # Запуск Go-программы
 echo "Running: $EXECUTABLE_PATH $ARGS"

@@ -1,0 +1,70 @@
+{
+  "size": {
+    "width": 1920,
+    "height": 1080
+  },
+  "iteration_count": 100000000,
+  "output_path": "wave.png",
+  "threads": 16,
+  "seed": 3.1415,
+  "symmetry_level": 3,
+  "palette": "ocean",
+  "brightness": 2,
+  "gamma": 3,
+  "functions": [
+    {
+      "name": "horseshoe",
+      "weight": 0.1,
+      "color_index": 0.1
+    },
+    {
+      "name": "spherical",
+      "weight": 1.0,
+      "color_index": 0.4
+    },
+    {
+      "name": "horseshoe",
+      "weight": 1.0,
+      "color_index": 0.1
+    },
+    {
+      "name": "swirl",
+      "weight": 10.1,
+      "color_index": 0.7
+    }
+  ],
+  "affine_params": [
+    {
+      "a": 0.85,
+      "b": 0.0,
+      "c": 0.0,
+      "d": 2.25,
+      "e": -0.5,
+      "f": 0.2
+    },
+    {
+      "a": 0.25,
+      "b": 0,
+      "c": 0.0,
+      "d": 2.85,
+      "e": -0.5,
+      "f": -0.2
+    },
+    {
+      "a": 0.0,
+      "b": 0.0,
+      "c": 0.0,
+      "d": 0.0,
+      "e": 0.0,
+      "f": 1
+    },
+    {
+      "a": 0.25,
+      "b": 0,
+      "c": 0.0,
+      "d": 0.85,
+      "e": -0.5,
+      "f": -0.2
+    }
+  ]
+}

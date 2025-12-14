@@ -10,7 +10,7 @@ measure_time() {
 
     # Измерение времени выполнения
     START_TIME=$(date +%s)
-    "$EXECUTABLE_PATH" -w 1920 -h 1080 -t "$threads" -o "$output_file"
+    "$EXECUTABLE_PATH" -w 1920 --height 1080 -t "$threads" -o "$output_file" -i 1000000000
     EXIT_CODE=$?
     END_TIME=$(date +%s)
 
@@ -45,7 +45,7 @@ fi
 echo "threads,duration_seconds" > performance_results.csv
 
 # Тестирование с разным количеством потоков
-for threads in 1 2 4; do
+for threads in 1 2 4 8; do
     if ! measure_time "$threads"; then
         echo "Performance test failed for $threads threads"
         exit 1

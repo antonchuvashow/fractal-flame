@@ -4,7 +4,7 @@ echo "Testing image properties..."
 
 # Аргументы для запуска программы
 EXECUTABLE_PATH="$1"
-ARGS="-w 800 -h 600 -o test_output.png"
+ARGS="-w 800 --height 600 -o test_output.png"
 
 # Генерация тестового изображения, если оно не существует
 if [ ! -f "test_output.png" ]; then

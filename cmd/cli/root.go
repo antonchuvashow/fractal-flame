@@ -126,15 +126,18 @@ For complex configurations, use a JSON config file with --config.`,
 			intSeed := int64(seed * math.MaxInt64)
 			rnd := rand.New(rand.NewSource(intSeed))
 			cfg := &domain.Config{}
+
 			var err error
 
 			if configPath != "" {
 				cfg, err = config.Load(configPath)
+
 				if err != nil {
-					return err
+					return fmt.Errorf("failed to load config: %w", err)
 				}
 			} else {
 				transforms, err := ParseTransforms(functions, rnd)
+
 				if err != nil {
 					return fmt.Errorf("failed to parse functions: %w", err)
 				}
@@ -164,7 +167,12 @@ For complex configurations, use a JSON config file with --config.`,
 
 			app := application.NewApplication(cfg)
 
-			return app.Run()
+			err = app.Run()
+			if err != nil {
+				return fmt.Errorf("application run failed: %w", err)
+			}
+
+			return nil
 		},
 	}
 

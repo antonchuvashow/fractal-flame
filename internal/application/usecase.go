@@ -1,6 +1,7 @@
 package application
 
 import (
+	"log/slog"
 	"math"
 	"math/rand"
 
@@ -27,7 +28,11 @@ func (a *Application) Run() error {
 
 	hist := a.generateParallel(gen, a.Config.Threads)
 
+	slog.Info("Rendering image")
+
 	img := renderer.Render(hist)
+
+	slog.Info("Writing image to file", "path", a.Config.Output)
 
 	err := wr.Write(img, a.Config.Output)
 	if err != nil {
@@ -54,12 +59,19 @@ func (a *Application) prepareTransforms() []domain.Transform {
 }
 
 func (a *Application) generateParallel(generator *domain.Generator, threads int) *domain.Histogram {
+	slog.Info(
+		"Starting parallel generation",
+		"threads", threads,
+		"iterations_per_thread", a.Config.Iterations/threads,
+	)
+
 	results := make(chan *domain.Histogram, threads)
 	iterationsPerThread := a.Config.Iterations / threads
 	intSeed := int64(a.Config.Seed * math.MaxInt64)
 
 	for i := range threads {
 		go func(idx int64) {
+			slog.Info("Generation thread started", "thread_id", idx)
 			rnd := rand.New(rand.NewSource(intSeed + idx))
 
 			hist := generator.Generate(
@@ -78,7 +90,11 @@ func (a *Application) generateParallel(generator *domain.Generator, threads int)
 		histograms[i] = <-results
 	}
 
-	return MergeHistograms(histograms)
+	slog.Info("All generation threads finished, merging histograms")
+	merged := MergeHistograms(histograms)
+	slog.Info("Histograms merged")
+
+	return merged
 }
 
 func MergeHistograms(histograms []*domain.Histogram) *domain.Histogram {

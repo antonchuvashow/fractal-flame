@@ -65,7 +65,7 @@ func TestRenderer_Render(t *testing.T) {
 
 		for y := range 10 {
 			for x := range 10 {
-				assert.Equal(t, color.RGBA{A: 255}, img.At(x, y))
+				assert.Equal(t, color.RGBA{}, img.At(x, y))
 			}
 		}
 	})

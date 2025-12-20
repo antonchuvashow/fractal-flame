@@ -2,17 +2,18 @@ package config
 
 // DTO is a structure for json config.
 type DTO struct {
-	Size       SizeDTO        `json:"size"`
-	Iterations int            `json:"iteration_count"`
-	Output     string         `json:"output_path"`
-	Threads    int            `json:"threads"`
-	Seed       float64        `json:"seed"`
-	Transforms []TransformDTO `json:"functions"`
-	Symmetry   int            `json:"symmetry_level"`
-	Gamma      float64        `json:"gamma"`
-	Brightness float64        `json:"brightness"`
-	Palette    string         `json:"palette"`
-	Affine     []AffineDTO    `json:"affine_params"`
+	Size            SizeDTO        `json:"size"`
+	Iterations      int            `json:"iteration_count"`
+	Output          string         `json:"output_path"`
+	Threads         int            `json:"threads"`
+	Seed            float64        `json:"seed"`
+	Transforms      []TransformDTO `json:"functions"`
+	Symmetry        int            `json:"symmetry_level"`
+	GammaCorrection bool           `json:"gamma_correction"`
+	Gamma           float64        `json:"gamma"`
+	Brightness      float64        `json:"brightness"`
+	Palette         string         `json:"palette"`
+	Affine          []AffineDTO    `json:"affine_params"`
 }
 
 type SizeDTO struct {

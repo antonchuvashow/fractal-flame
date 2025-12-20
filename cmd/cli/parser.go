@@ -75,13 +75,13 @@ func parseTransformPart(part string, rnd *rand.Rand) (domain.TransformEntry, err
 
 // ParseAffineParams parse the affine transforation string
 // "a,b,c,d,e,f:weight:color;a,b,c,d,e,f:weight:color" or "a,b,c,d,e,f".
-func ParseAffineParams(input string, rnd *rand.Rand) ([]domain.AffineEntry, error) {
+func ParseAffineParams(input string, rnd *rand.Rand) ([]domain.Affine, error) {
 	if input == "" {
 		return nil, nil
 	}
 
 	parts := strings.Split(input, ";")
-	affines := make([]domain.AffineEntry, 0, len(parts))
+	affines := make([]domain.Affine, 0, len(parts))
 
 	for _, part := range parts {
 		part = strings.TrimSpace(part)
@@ -101,21 +101,21 @@ func ParseAffineParams(input string, rnd *rand.Rand) ([]domain.AffineEntry, erro
 }
 
 // parseAffinePart parse one line of affine transform "0.5,0.1,0,0,0.5,0:1.0:0.3".
-func parseAffinePart(part string, rnd *rand.Rand) (domain.AffineEntry, error) {
+func parseAffinePart(part string, rnd *rand.Rand) (domain.Affine, error) {
 	const numberOfCoeffs = 6
 
 	sections := strings.Split(part, ":")
 
 	coeffs := strings.Split(sections[0], ",")
 	if len(coeffs) != numberOfCoeffs {
-		return domain.AffineEntry{}, &ErrInvalidAffine{Part: part}
+		return domain.Affine{}, &ErrInvalidAffine{Part: part}
 	}
 
 	values := make([]float64, numberOfCoeffs)
 	for i, c := range coeffs {
 		v, err := strconv.ParseFloat(strings.TrimSpace(c), 64)
 		if err != nil {
-			return domain.AffineEntry{}, &ErrInvalidCoefficient{Part: part, Coefficient: c}
+			return domain.Affine{}, &ErrInvalidCoefficient{Part: part, Coefficient: c}
 		}
 
 		values[i] = v
@@ -129,34 +129,26 @@ func parseAffinePart(part string, rnd *rand.Rand) (domain.AffineEntry, error) {
 	if len(sections) >= 2 && sections[1] != "" {
 		weight, err = strconv.ParseFloat(sections[1], 64)
 		if err != nil {
-			return domain.AffineEntry{}, &ErrInvalidWeight{Part: part}
+			return domain.Affine{}, &ErrInvalidWeight{Part: part}
 		}
 	}
 
 	if len(sections) >= 3 && sections[2] != "" {
 		colorIndex, err = strconv.ParseFloat(sections[2], 64)
 		if err != nil {
-			return domain.AffineEntry{}, &ErrInvalidColor{Part: part}
+			return domain.Affine{}, &ErrInvalidColor{Part: part}
 		}
 	}
 
-	ac := domain.AffineEntry{
-		A: values[0],
-		B: values[1],
-		C: values[2],
-		D: values[3],
-		E: values[4],
-		F: values[5],
-		Transform: domain.Affine{
-			A:     values[0],
-			B:     values[1],
-			C:     values[2],
-			D:     values[3],
-			E:     values[4],
-			F:     values[5],
-			W:     weight,
-			Color: colorIndex,
-		},
+	ac := domain.Affine{
+		A:     values[0],
+		B:     values[1],
+		C:     values[2],
+		D:     values[3],
+		E:     values[4],
+		F:     values[5],
+		W:     weight,
+		Color: colorIndex,
 	}
 
 	return ac, nil

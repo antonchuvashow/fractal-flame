@@ -16,8 +16,8 @@ func mockConfig() *domain.Config {
 		Transforms: []domain.TransformEntry{
 			{Transform: domain.Sinusoidal{W: 1, Color: 0.5}},
 		},
-		AffineTransform: []domain.AffineEntry{
-			{Transform: domain.Affine{A: 1, B: 0, C: 0, D: 0, E: 1, F: 0, W: 1, Color: 0.2}},
+		AffineTransform: []domain.Affine{
+			{A: 1, B: 0, C: 0, D: 0, E: 1, F: 0, W: 1, Color: 0.2},
 		},
 		Palette:       domain.Palette{Colors: domain.FirePalette()},
 		SymmetryLevel: 1,

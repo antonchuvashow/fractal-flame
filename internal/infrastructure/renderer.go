@@ -9,16 +9,18 @@ import (
 )
 
 type Renderer struct {
-	Palette    [256]color.RGBA
-	Gamma      float64
-	Brightness float64
+	Palette            [256]color.RGBA
+	Gamma              float64
+	Brightness         float64
+	UseGammaCorrection bool
 }
 
-func NewRenderer(palette [256]color.RGBA, gamma, brightness float64) *Renderer {
+func NewRenderer(palette [256]color.RGBA, gamma, brightness float64, useGammaCorrection bool) *Renderer {
 	return &Renderer{
-		Palette:    palette,
-		Gamma:      gamma,
-		Brightness: brightness,
+		Palette:            palette,
+		Gamma:              gamma,
+		Brightness:         brightness,
+		UseGammaCorrection: useGammaCorrection,
 	}
 }
 
@@ -31,7 +33,6 @@ func (r *Renderer) Render(h *domain.Histogram) *image.RGBA {
 	}
 
 	logMaxCount := math.Log10(float64(maxCount))
-	invGamma := 1.0 / r.Gamma
 
 	for y := range h.Height {
 		for x := range h.Width {
@@ -46,13 +47,18 @@ func (r *Renderer) Render(h *domain.Histogram) *image.RGBA {
 			baseColor := r.colorFromPalette(colorIndex)
 			logDensity := math.Log10(float64(count)) / logMaxCount
 
-			// gamma-correction
-			alpha := math.Pow(logDensity, invGamma) * r.Brightness
+			alpha := logDensity
+			if r.UseGammaCorrection {
+				invGamma := 1.0 / r.Gamma
+				alpha = math.Pow(alpha, invGamma)
+			}
+
+			finalAlpha := alpha * r.Brightness
 
 			img.Set(x, y, color.RGBA{
-				R: clamp(float64(baseColor.R) * alpha),
-				G: clamp(float64(baseColor.G) * alpha),
-				B: clamp(float64(baseColor.B) * alpha),
+				R: clamp(float64(baseColor.R) * finalAlpha),
+				G: clamp(float64(baseColor.G) * finalAlpha),
+				B: clamp(float64(baseColor.B) * finalAlpha),
 				A: 255,
 			})
 		}

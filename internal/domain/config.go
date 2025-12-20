@@ -15,8 +15,9 @@ type Config struct {
 	SymmetryLevel   int
 	Gamma           float64
 	Brightness      float64
+	GammaCorrection bool
 	Palette         Palette
-	AffineTransform []AffineEntry
+	AffineTransform []Affine
 }
 
 // Size describes the size of the output image.
@@ -31,13 +32,6 @@ type TransformEntry struct {
 	Name       string
 	Weight     float64
 	ColorIndex float64
-}
-
-// AffineEntry contains information about an affine transformation.
-type AffineEntry struct {
-	Transform Transform
-	A, B, C   float64
-	D, E, F   float64
 }
 
 // Palette contains information about a color palette.

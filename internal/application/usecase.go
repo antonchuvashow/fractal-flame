@@ -24,7 +24,12 @@ func (a *Application) Run() error {
 
 	wr := infrastructure.NewPngWriter()
 	gen := domain.NewGenerator(transforms, a.Config.Palette.Colors, a.Config.SymmetryLevel)
-	renderer := infrastructure.NewRenderer(a.Config.Palette.Colors, a.Config.Gamma, a.Config.Brightness)
+	renderer := infrastructure.NewRenderer(
+		a.Config.Palette.Colors,
+		a.Config.Gamma,
+		a.Config.Brightness,
+		a.Config.GammaCorrection,
+	)
 
 	hist := a.generateParallel(gen, a.Config.Threads)
 
@@ -51,7 +56,7 @@ func (a *Application) prepareTransforms() []domain.Transform {
 			affineIdx = len(a.Config.AffineTransform) - 1
 		}
 
-		affine := a.Config.AffineTransform[affineIdx].Transform
+		affine := a.Config.AffineTransform[affineIdx]
 		transformations[i] = domain.Composite{Transforms: []domain.Transform{affine, tr.Transform}}
 	}
 
@@ -67,9 +72,15 @@ func (a *Application) generateParallel(generator *domain.Generator, threads int)
 
 	results := make(chan *domain.Histogram, threads)
 	iterationsPerThread := a.Config.Iterations / threads
+	remainder := a.Config.Iterations % threads
 	intSeed := int64(a.Config.Seed * math.MaxInt64)
 
 	for i := range threads {
+		iterations := iterationsPerThread
+		if i < remainder {
+			iterations++
+		}
+
 		go func(idx int64) {
 			slog.Info("Generation thread started", "thread_id", idx)
 			rnd := rand.New(rand.NewSource(intSeed + idx))
@@ -77,7 +88,7 @@ func (a *Application) generateParallel(generator *domain.Generator, threads int)
 			hist := generator.Generate(
 				a.Config.Size.Width,
 				a.Config.Size.Height,
-				iterationsPerThread,
+				iterations,
 				rnd,
 			)
 			results <- hist

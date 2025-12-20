@@ -14,10 +14,11 @@ import (
 )
 
 const (
-	defaultWidth      = 1920
-	defaultHeight     = 1080
-	defaultIterations = 250000
-	defaultGamma      = 2.2
+	defaultWidth           = 1920
+	defaultHeight          = 1080
+	defaultIterations      = 250000
+	defaultGamma           = 2.2
+	defaultGammaCorrection = false
 )
 
 // Описания для сложных параметров
@@ -64,19 +65,20 @@ Example: --affine "0.5,0.0,0.25,0.0,0.5,0.0;0.5,0.0,-0.25,0.0,0.5,0.5"`
 
 func GetRootCommand() (*cobra.Command, error) {
 	var (
-		width        int
-		height       int
-		iterations   int
-		output       string
-		threads      int
-		seed         float64
-		symmetry     int
-		gamma        float64
-		brightness   float64
-		palette      string
-		functions    string
-		affineParams string
-		configPath   string
+		width           int
+		height          int
+		iterations      int
+		output          string
+		threads         int
+		seed            float64
+		symmetry        int
+		gammaCorrection bool
+		gamma           float64
+		brightness      float64
+		palette         string
+		functions       string
+		affineParams    string
+		configPath      string
 	)
 
 	cmd := &cobra.Command{
@@ -156,6 +158,7 @@ For complex configurations, use a JSON config file with --config.`,
 					Transforms:      transforms,
 					AffineTransform: affines,
 					SymmetryLevel:   symmetry,
+					GammaCorrection: gammaCorrection,
 					Gamma:           gamma,
 					Brightness:      brightness,
 					Palette: domain.Palette{
@@ -191,8 +194,9 @@ For complex configurations, use a JSON config file with --config.`,
 		"Random seed for reproducible results (0-1)")
 	cmd.Flags().IntVarP(&symmetry, "symmetry", "s", 1,
 		"Rotational symmetry level (1 = none, 2+ = N-fold symmetry)")
-	cmd.Flags().Float64VarP(&gamma, "gamma", "g", defaultGamma,
+	cmd.Flags().Float64Var(&gamma, "gamma", defaultGamma,
 		"Gamma correction value (typically 2.0-3.0)")
+	cmd.Flags().BoolVarP(&gammaCorrection, "gamma-correction", "g", defaultGammaCorrection, "Enable gamma correction")
 	cmd.Flags().Float64VarP(&brightness, "brightness", "b", 1.0,
 		"Brightness multiplier (0.5-2.0 recommended)")
 	cmd.Flags().StringVarP(&palette, "palette", "p", "rainbow",

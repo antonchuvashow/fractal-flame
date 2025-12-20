@@ -47,6 +47,7 @@ func MapToDomain(dto *DTO) (*domain.Config, error) {
 		Seed:            dto.Seed,
 		Transforms:      transforms,
 		SymmetryLevel:   dto.Symmetry,
+		GammaCorrection: dto.GammaCorrection,
 		Gamma:           dto.Gamma,
 		Brightness:      dto.Brightness,
 		Palette:         mapPalette(dto.Palette),
@@ -74,16 +75,15 @@ func mapTransforms(dtos []TransformDTO) ([]domain.TransformEntry, error) {
 	return result, nil
 }
 
-func mapAffines(dtos []AffineDTO) []domain.AffineEntry {
-	result := make([]domain.AffineEntry, 0, len(dtos))
+func mapAffines(dtos []AffineDTO) []domain.Affine {
+	result := make([]domain.Affine, 0, len(dtos))
 
 	for _, dto := range dtos {
-		entry := domain.AffineEntry{
+		entry := domain.Affine{
 			A: dto.A, B: dto.B, C: dto.C,
 			D: dto.D, E: dto.E, F: dto.F,
 		}
 
-		entry.Transform = domain.Affine{A: dto.A, B: dto.B, C: dto.C, D: dto.D, E: dto.E, F: dto.F}
 		result = append(result, entry)
 	}
 

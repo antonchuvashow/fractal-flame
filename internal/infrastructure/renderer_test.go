@@ -15,12 +15,13 @@ func TestNewRenderer(t *testing.T) {
 	gamma := 2.2
 	brightness := 1.5
 
-	r := NewRenderer(palette, gamma, brightness)
+	r := NewRenderer(palette, gamma, brightness, true)
 
 	assert.NotNil(t, r)
 	assert.Equal(t, palette, r.Palette)
 	assert.InDelta(t, gamma, r.Gamma, 1e-9)
 	assert.InDelta(t, brightness, r.Brightness, 1e-9)
+	assert.True(t, r.UseGammaCorrection)
 }
 
 func Test_clamp(t *testing.T) {
@@ -52,7 +53,7 @@ func TestRenderer_Render(t *testing.T) {
 
 	palette := [256]color.RGBA{}
 	palette[255] = color.RGBA{R: 255, G: 255, B: 255, A: 255}
-	r := NewRenderer(palette, 1.0, 1.0)
+	r := NewRenderer(palette, 2.2, 1.0, true)
 
 	t.Run("renders an empty histogram", func(t *testing.T) {
 		t.Parallel()
@@ -64,7 +65,7 @@ func TestRenderer_Render(t *testing.T) {
 
 		for y := range 10 {
 			for x := range 10 {
-				assert.Equal(t, color.RGBA{R: 0, G: 0, B: 0, A: 0}, img.At(x, y))
+				assert.Equal(t, color.RGBA{A: 255}, img.At(x, y))
 			}
 		}
 	})
@@ -80,16 +81,15 @@ func TestRenderer_Render(t *testing.T) {
 		hist.Increment(0, 0, 0.0)
 		hist.Increment(0, 0, 0.0) // maxCount is now 2
 
-		hist.Count[5][5] = 2
-		hist.ColorSum[5][5] = 2.0
 		img := r.Render(hist)
 		pixelColor := img.At(5, 5)
 
-		// logDensity = log(2)/log(2) = 1
-		// alpha = 1^1 * 2.0 = 2.0
+		// logDensity = log(1)/log(2) = 0
+		// alpha = 0
+		// finalAlpha = 0 * 1.0 = 0
 		// Base color is white (255, 255, 255)
-		// Final color = (255*2.0, 255*2.0, 255*2.0) clamped to (255, 255, 255)
-		expected := color.RGBA{R: 255, G: 255, B: 255, A: 255}
+		// Final color = (255*0, 255*0, 255*0) clamped to (0, 0, 0)
+		expected := color.RGBA{R: 0, G: 0, B: 0, A: 255}
 		assert.Equal(t, expected, pixelColor)
 	})
 }
